@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import Link from "next/link";
 
 
 const formSchema = z.object({
@@ -188,9 +189,11 @@ export default function SignUp() {
                     {/* Sign Up link */}
                     <p className="text-center mt-16 text-[16px] text-[#616161]">
                         Already have an account? {" "}
+                       <Link href="/login">
                         <span className="text-[#00383B] font-bold cursor-pointer hover:underline">
                             Log In
                         </span>
+                       </Link>
                     </p>
                 </Form>
             </div>
