@@ -1,8 +1,11 @@
 import React from 'react'
+import { ChangePassword } from './_components/ChangePassword'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div>
+      <ChangePassword/>
+    </div>
   )
 }
 

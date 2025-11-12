@@ -6,10 +6,10 @@ function layout({ children }: { children: React.ReactNode }) {
     return (
         <>
 
-            <div className="flex">
+            <div className="flex h-screen overflow-hidden">
                 <DashboardSidebar />
-                <div className="w-full mt-[80px] p-6 bg-[#EDEEF1]">
-                    {children}
+                <div className="flex-1  bg-[#EDEEF1] overflow-y-auto">
+                    <div className="min-h-screen p-6 mt-[80px]">{children}</div>
                 </div>
             </div>
         </>
