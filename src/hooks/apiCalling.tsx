@@ -1,6 +1,7 @@
 
-import { addBlog } from "@/lib/blog";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addBlog, getAllBlog } from "@/lib/blog";
+import { BlogResponse } from "@/types/blog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 
@@ -14,23 +15,22 @@ import { toast } from "sonner";
 //     })
 // }
 
-// export function useProfileQuery(token: string | undefined) {
-//     return useQuery<UserProfileResponse>({
-//         queryKey: ["me"],
-//         queryFn: () => {
-//             if (!token) throw new Error("Token is missing")
-//             return getProfile(token)
-//         },
-//         enabled: !!token,
-//     })
-// }
+export function useGetAllBlog(page?: number, limit?: number) {
+    return useQuery<BlogResponse>({
+        queryKey: ["blog", page, limit],
+        queryFn: () => {
+            return getAllBlog({ page, limit })
+        },
+    })
+}
+
 
 
 export function useAddBlog(token: string, onSuccessCallback?: () => void) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (payload:{ title: string, description: string, image: File}) => addBlog(token, payload),
+        mutationFn: (payload: { title: string, description: string, image: File }) => addBlog(token, payload),
         onSuccess: () => {
             toast.success("blog add successful");
             queryClient.invalidateQueries({ queryKey: ["blog"] });

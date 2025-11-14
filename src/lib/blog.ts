@@ -1,3 +1,4 @@
+import { BlogResponse } from "@/types/blog";
 
 export async function addBlog(token: string, payload : { title: string, description: string, image: File}) {
   const formData = new FormData();
@@ -17,4 +18,17 @@ export async function addBlog(token: string, payload : { title: string, descript
   const resData = await response.json();
   if (!response.ok) throw new Error(resData.message || "Failed to ");
   return resData;
+}
+
+export async function getAllBlog( { page , limit  }: { page?: number; limit?: number } ) {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/blog?page=${page}&limit=${limit}`, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const resData: BlogResponse = await response.json()
+    if (!response.ok) {
+        throw new Error(resData.message || "Failed to get blog data")
+    }
+    return resData 
 }
