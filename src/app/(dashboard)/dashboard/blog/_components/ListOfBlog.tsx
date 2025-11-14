@@ -18,6 +18,7 @@ import { ReusablePagination } from '@/components/pagination'
 import { Skeleton } from "@/components/ui/skeleton"
 import ViewBlogModal from '@/components/dashboard/ViewBlogModal'
 import { Blog } from '@/types/blog'
+import Link from 'next/link'
 
 const ListOfBlog = () => {
     const [activeCategory, setActiveCategory] = useState('All')
@@ -180,9 +181,11 @@ const ListOfBlog = () => {
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                     </button>
+                                                  <Link href={`/dashboard/blog/${post._id}`} className="text-gray-500 hover:text-gray-700">
                                                     <button className="text-green-600 hover:text-green-700">
                                                         <Pencil className="w-4 h-4" />
                                                     </button>
+                                                  </Link>
                                                     <button className="text-red-600 hover:text-red-700">
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
