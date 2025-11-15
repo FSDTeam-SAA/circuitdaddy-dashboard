@@ -14,6 +14,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 
 const formSchema = z.object({
@@ -27,18 +30,41 @@ export default function ForgetPassword() {
       email: "",
     },
   });
+  const router = useRouter();
+
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["forgot-password"],
+    mutationFn: (email: string) =>
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      }).then((res) => res.json()),
+ 
+    onSuccess: (data, email) => {
+
+      if (!data?.success) {
+        toast.error(data?.message || "Something went wrong");
+        return;
+      }
+
+      toast.success(data?.message || "Email sent successfully!");
+      router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
+    },
+
+    onError: (error) => {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Forgot password error:", error);
+    },
+  });
+
 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-      toast.success("Login successful!", {
-        description: `Welcome back, ${values.email}!`,
-      });
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+    mutate(values.email);
   }
 
   return (
@@ -86,7 +112,7 @@ export default function ForgetPassword() {
               type="submit"
               className="bg-[#00383B] hover:bg-[#00383B]/90 w-full text-white text-[16px] py-5 shadow-md hover:shadow-lg transition-shadow"
             >
-              Send OTP
+              Send OTP {isPending && <Loader2 className="animate-spin mr-2" />}
             </Button>
           </form>
         </Form>
