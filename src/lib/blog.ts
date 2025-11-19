@@ -47,9 +47,9 @@ export async function getSingleBlog(id: string) {
 }
 
 
-export async function editBlog(token: string, payload: { title: string, description: string, image: File },id: string,) {
+export async function editBlog(token: string, payload: { title: string, description: string, image: File }, id: string,) {
   const formData = new FormData();
-    console.log("id in useEditBlog:", id);
+  console.log("id in useEditBlog:", id);
   if (payload.image) formData.append("featuredImage", payload.image);
 
   formData.append("title", payload.title);
@@ -61,6 +61,19 @@ export async function editBlog(token: string, payload: { title: string, descript
       Authorization: `Bearer ${token}`,
     },
     body: formData,
+  });
+
+  const resData = await response.json();
+  if (!response.ok) throw new Error(resData.message || "Failed to ");
+  return resData;
+}
+
+export async function deleteBlog(token: string, id: string,) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/blog/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   const resData = await response.json();

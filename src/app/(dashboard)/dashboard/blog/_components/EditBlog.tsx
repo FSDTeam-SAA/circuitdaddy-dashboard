@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuill } from 'react-quilljs';
 import 'quill/dist/quill.snow.css';
-import { Upload, X } from 'lucide-react';
+import { Loader2, Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEditBlog, useGetSingelBlog } from '@/hooks/apiCalling';
 import { useSession } from 'next-auth/react';
@@ -148,7 +148,7 @@ export default function EditBlog({ id }: { id: string }) {
                     onClick={handleSubmit}
                     className="px-6 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
                 >
-                    Update Blog {editBlogMutation.isPending && <Upload className="animate-spin w-[10px] h-[10px] inline-block ml-2" />}
+                    Update Blog {editBlogMutation.isPending && <Loader2 className="animate-spin w-[15px] h-[15px] inline-block ml-2" />}
                 </button>
             </div>
         </div>

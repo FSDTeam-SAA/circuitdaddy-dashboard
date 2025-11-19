@@ -381,14 +381,14 @@ export default function LoginForm() {
           </form>
 
           {/* Sign Up link */}
-          <p className="text-center mt-16 text-[16px] text-[#616161]">
+          {/* <p className="text-center mt-16 text-[16px] text-[#616161]">
             Don’t have an account?{" "}
             <Link href="/sign-up">
               <span className="text-[#00383B] font-bold cursor-pointer hover:underline">
                 Sign Up
               </span>
             </Link>
-          </p>
+          </p> */}
         </Form>
       </div>
     </div>
