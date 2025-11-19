@@ -26,19 +26,21 @@ export async function deleteIndustry(token: string, id: string,) {
     return resData;
 }
 
-export async function addIndustry(token: string, payload: { name: string, discription: string, status: string }) {
+export async function addIndustry(token: string, payload: { name: string, discription: string, status: string, image: File }) {
+
+    const formData = new FormData();
+    formData.append("name", payload.name);
+    formData.append("discription", payload.discription);
+    formData.append("status", payload.status);
+    if (payload.image) formData.append("image", payload.image);
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/industry`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-            name: payload.name,
-            discription: payload.discription,
-            status: payload.status,
-        }),
+        body: formData,
     });
 
     const resData = await response.json();
@@ -46,32 +48,32 @@ export async function addIndustry(token: string, payload: { name: string, discri
     return resData;
 }
 
-export async function getSingleIndustry(id:string) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/industry/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-  const resData: SingleIndustry = await response.json()
-  if (!response.ok) {
-    throw new Error(resData.message || "Failed to get blog data")
-  }
-  return resData
+export async function getSingleIndustry(id: string) {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/industry/${id}`, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    const resData: SingleIndustry = await response.json()
+    if (!response.ok) {
+        throw new Error(resData.message || "Failed to get blog data")
+    }
+    return resData
 }
 
-export async function editIndustry(token: string,id : string , payload: { name: string, discription: string, status: string, }) {
+export async function editIndustry(token: string, id: string, payload: { name: string, discription: string, status: string, image: File }) {
+    const formData = new FormData();
+    formData.append("name", payload.name);
+    formData.append("discription", payload.discription);
+    formData.append("status", payload.status);
+    if (payload.image) formData.append("image", payload.image);
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/industry/${id}`, {
         method: "PUT",
         headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-            name: payload.name,
-            discription: payload.discription,
-            status: payload.status,
-        }),
+        body: formData,
     });
 
     const resData = await response.json();

@@ -5,6 +5,7 @@ export interface Industry {
     discription: string; // (Note: backend spelled it "discription")
     createBy: string;
     users: string[];
+    image: string;
     createdAt: string;
     updatedAt: string;
     __v: number;
