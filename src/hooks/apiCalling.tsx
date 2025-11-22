@@ -1,14 +1,19 @@
 
 import { addBlog, deleteBlog, editBlog, getAllBlog, getSingleBlog } from "@/lib/blog";
+import { getOverview } from "@/lib/dashboardOverview";
 import { addFaq, deleteFaq, editFaq, getAllFaq, getSingelFaq } from "@/lib/faq";
 import { addIndustry, deleteIndustry, editIndustry, getAllIndustries, getSingleIndustry } from "@/lib/industries";
-import { addService, deleteService, editService, getAllService, getSingleService } from "@/lib/service";
+import { getProfile, updateAvatar, updateProfileInfo } from "@/lib/profileinfo";
+import { addService, deleteService, editService, getAllActiveProject, getAllProjectCompleted, getAllService, getAllServiceStast, getSingleService } from "@/lib/service";
 import { getAllUser } from "@/lib/user";
 import { BlogResponse, SingelBlogResponse } from "@/types/blog";
+import { DashboardOverviewResponse } from "@/types/dashboardStach";
 import { FaqResponse, SingleFaqResponse } from "@/types/faq";
 import { IndustryResponse, SingleIndustry } from "@/types/industries";
+import { ProjectsResponse } from "@/types/project";
 import { ServicesResponse, SingleService } from "@/types/service";
 import { GetAllUsersResponse } from "@/types/user";
+import { UserProfileResponse } from "@/types/userDataType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -182,7 +187,7 @@ export function useAddIndustry(token: string, onSuccessCallback?: () => void, fo
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (payload:{ name: string, discription: string, status: string, image: File}) => addIndustry(token, payload),
+        mutationFn: (payload: { name: string, discription: string, status: string, image: File }) => addIndustry(token, payload),
         onSuccess: () => {
             toast.success("industry add successful");
             queryClient.invalidateQueries({ queryKey: ["industry"] });
@@ -300,6 +305,87 @@ export function useGetAllUser(page?: number, limit?: number) {
         queryKey: ["user", page, limit],
         queryFn: () => {
             return getAllUser({ page, limit })
+        },
+    })
+}
+
+export function useProfileInfoUpdate(token: string, onSuccessCallback?: () => void) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (payload: FormData) => updateProfileInfo(token, payload),
+        onSuccess: () => {
+            toast.success("Profile updated successfully");
+            queryClient.invalidateQueries({ queryKey: ["me"] });
+            if (onSuccessCallback) onSuccessCallback();
+        },
+        onError: (error: unknown) => {
+            if (error instanceof Error) toast.error(error.message || "Update failed");
+            else toast.error("Update failed");
+        },
+    });
+}
+
+export function useProfileQuery(token: string | undefined) {
+    return useQuery<UserProfileResponse>({
+        queryKey: ["me"],
+        queryFn: () => {
+            if (!token) throw new Error("Token is missing")
+            return getProfile(token)
+        },
+        enabled: !!token,
+    })
+}
+
+export function useProfileAvatarUpdate(token: string, onSuccessCallback?: () => void) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (payload: { avatar: File }) => updateAvatar(token, payload),
+        onSuccess: () => {
+            toast.success("Profile updated successfully");
+            queryClient.invalidateQueries({ queryKey: ["me"] });
+            if (onSuccessCallback) onSuccessCallback();
+        },
+        onError: (error: unknown) => {
+            if (error instanceof Error) toast.error(error.message || "Update failed");
+            else toast.error("Update failed");
+        },
+    });
+}
+
+export function useGetAllOverview( token: string) {
+    return useQuery<DashboardOverviewResponse>({
+        queryKey: ["overview"],
+        queryFn: () => {
+            return getOverview(token)
+        },
+    })
+}
+
+export function useGetAllServiceStats() {
+    return useQuery<ServicesResponse>({
+        queryKey: ["service1"],
+        queryFn: () => {
+            return getAllServiceStast()
+        },
+    })
+}
+
+export function useGetAllActiveProject(token:string) {
+    return useQuery<ProjectsResponse>({
+        queryKey: ["active-project"],
+        queryFn: () => {
+            return getAllActiveProject(token)
+        },
+    })
+}
+
+export function useGetAllProjectCompleted(token:string) {
+    return useQuery<ProjectsResponse>({
+        queryKey: ["completed-project"],
+        queryFn: () => {
+            return getAllProjectCompleted(token)
         },
     })
 }
