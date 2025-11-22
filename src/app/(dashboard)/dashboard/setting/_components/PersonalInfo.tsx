@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,9 +21,12 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useProfileInfoUpdate, useProfileQuery } from "@/hooks/apiCalling";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 const formSchema = z.object({
     firstName: z.string().min(1),
@@ -32,13 +34,17 @@ const formSchema = z.object({
     emailAddress: z.string().email(),
     phoneNumber: z.string().min(1),
     address: z.string().min(1),
-    joiningDate: z.date().optional(),
-    designation: z.string().min(1),
-    accessLevels: z.string().min(1),
+    joiningDate: z.string().optional(),
     lastoginTime: z.string().min(1),
 });
 
 export default function PersonalInfo() {
+    const { data: session } = useSession();
+    const token = (session?.user as { accessToken: string })?.accessToken;
+    const { data: profileResp, isLoading } = useProfileQuery(token);
+    const profileData = profileResp?.data;
+    const updateMutation = useProfileInfoUpdate(token);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -48,25 +54,43 @@ export default function PersonalInfo() {
             phoneNumber: "",
             address: "",
             joiningDate: undefined,
-            designation: "",
-            accessLevels: "",
             lastoginTime: "",
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        try {
-            console.log(values);
-            toast(
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-                </pre>
-            );
-        } catch (error) {
-            console.error("Form submission error", error);
-            toast.error("Failed to submit the form. Please try again.");
+    useEffect(() => {
+        if (profileData) {
+            const formattedLastLogin = profileData.lastLogin
+                ? new Date(profileData.lastLogin).toLocaleString("en-GB")
+                : "";
+
+            const formattedJoiningDate = profileData.createdAt
+                ? new Date(profileData.createdAt).toLocaleDateString("en-GB")
+                : "";
+
+            form.reset({
+                firstName: profileData.firstName ?? "",
+                lastName: profileData.lastName ?? "",
+                phoneNumber: profileData.phone ?? "",
+                address: profileData.location ?? "",
+                emailAddress: profileData.email ?? "",
+                joiningDate: formattedJoiningDate,
+                lastoginTime: formattedLastLogin,
+            });
         }
+    }, [profileData, form]);
+
+
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        const formData = new FormData();
+        formData.append("firstName", values.firstName);
+        formData.append("lastName", values.lastName);
+        formData.append("phone", values.phoneNumber);
+        formData.append("location", values.address);
+        updateMutation.mutate(formData);
     }
+    if (isLoading) return <div className="p-4">Loading…</div>;
 
     return (
         <Card>
@@ -121,7 +145,7 @@ export default function PersonalInfo() {
                                         <FormItem>
                                             <FormLabel className="text-[#434C45] font-medium">Email Address</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Email Address" type="email" {...field} />
+                                                <Input disabled placeholder="Email Address" type="email" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -193,7 +217,7 @@ export default function PersonalInfo() {
                                                 <PopoverContent align="start" className="p-0">
                                                     <Calendar
                                                         mode="single"
-                                                        selected={field.value}
+                                                        selected={field.value ? new Date(field.value) : undefined}
                                                         onSelect={field.onChange}
                                                         disabled={(date) =>
                                                             date > new Date() || date < new Date("1900-01-01")
@@ -209,8 +233,8 @@ export default function PersonalInfo() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-12 gap-4">
-                            <div className="col-span-4">
+                        <div className="grid grid-cols-4 gap-4">
+                            {/* <div className="col-span-4">
                                 <FormField
                                     control={form.control}
                                     name="designation"
@@ -224,9 +248,9 @@ export default function PersonalInfo() {
                                         </FormItem>
                                     )}
                                 />
-                            </div>
+                            </div> */}
 
-                            <div className="col-span-4">
+                            {/* <div className="col-span-4">
                                 <FormField
                                     control={form.control}
                                     name="accessLevels"
@@ -240,7 +264,7 @@ export default function PersonalInfo() {
                                         </FormItem>
                                     )}
                                 />
-                            </div>
+                            </div> */}
 
                             <div className="col-span-4">
                                 <FormField
@@ -250,7 +274,7 @@ export default function PersonalInfo() {
                                         <FormItem>
                                             <FormLabel className="text-[#434C45] font-medium">Last Login Time</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Last Login Time" type="text" {...field} />
+                                                <Input disabled placeholder="Last Login Time" type="text" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -260,7 +284,7 @@ export default function PersonalInfo() {
                         </div>
                         <div className=" flex items-center justify-end">
 
-                            <Button type="submit" className="bg-[#147575] text-white" >Submit</Button>
+                            <Button type="submit" className="bg-[#147575] text-white" >Submit {updateMutation.isPending && <Loader2 className="animate-spin" />}</Button>
                         </div>
                     </form>
                 </Form>

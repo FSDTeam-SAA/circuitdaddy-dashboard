@@ -78,3 +78,44 @@ export async function editService(token: string, id: string, payload: { name: st
   if (!response.ok) throw new Error(resData.message || "Failed to ");
   return resData;
 }
+
+export async function getAllServiceStast() {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/service`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  const resData = await response.json()
+  if (!response.ok) {
+    throw new Error(resData.message || "Failed to get service data")
+  }
+  return resData
+}
+
+export async function getAllActiveProject(token: string) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/project/my?status=in_progress&limit=3`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  const resData = await response.json()
+  if (!response.ok) {
+    throw new Error(resData.message || "Failed to get project data")
+  }
+  return resData
+}
+
+export async function getAllProjectCompleted(token: string) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/project/my?status=completed&limit=2`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  const resData = await response.json()
+  if (!response.ok) {
+    throw new Error(resData.message || "Failed to get project data")
+  }
+  return resData
+}

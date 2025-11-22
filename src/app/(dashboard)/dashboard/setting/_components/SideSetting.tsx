@@ -1,33 +1,43 @@
 "use client"
-
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, Loader2 } from "lucide-react"
+import { useProfileAvatarUpdate, useProfileQuery } from "@/hooks/apiCalling"
+import { useSession } from "next-auth/react"
 
 export function SideSetting() {
-    const [imageUrl, setImageUrl] = useState(
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-AakfxVtAP4R24wApjG814o3lVRuBo5.png"
-    )
+    const { data: session } = useSession();
+    const token = (session?.user as { accessToken: string })?.accessToken;
+    const getProfile = useProfileQuery(token)
+    const profileData = getProfile.data?.data;
+    const { mutate, isPending } = useProfileAvatarUpdate(token);
+
+    const [imageUrl, setImageUrl] = useState("")
     const fileInputRef = useRef<HTMLInputElement | null>(null)
 
+    // Set existing profile image once data is loaded
     useEffect(() => {
-        console.log("Profile Image URL:", imageUrl)
-    }, [imageUrl])
+        if (profileData?.profileImage) {
+            setImageUrl(profileData.profileImage)
+        }
+    }, [profileData?.profileImage])
+
+    // When avatar is clicked
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click()
+    }
 
     // When file is selected
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (file) {
-            console.log("Selected file:", file)
             const fileUrl = URL.createObjectURL(file)
             setImageUrl(fileUrl)
-        }
-    }
 
-    // When avatar is clicked
-    const handleAvatarClick = () => {
-        fileInputRef.current?.click()
+            // Immediately call mutate to upload the avatar
+            mutate({ avatar: file })
+        }
     }
 
     return (
@@ -50,28 +60,47 @@ export function SideSetting() {
                 <div className="absolute -top-16 left-1/2 -translate-x-1/2 cursor-pointer" onClick={handleAvatarClick}>
                     <div className="relative">
                         <Avatar className="h-32 w-32 border-4 border-white shadow-md">
-                            <AvatarImage src={imageUrl || "/placeholder.svg"} alt="Profile Image" />
-                            <AvatarFallback className="text-2xl bg-gray-200 text-gray-600">MJ</AvatarFallback>
+                            {isPending ? (
+                                <div className="flex items-center justify-center w-full h-full bg-gray-100 rounded-full">
+                                    <Loader2 className="animate-spin h-8 w-8 text-teal-500" />
+                                </div>
+                            ) : (
+                                <AvatarImage src={imageUrl || "/placeholder.svg"} alt="Profile Image" />
+                            )}
+                            <AvatarFallback className="text-2xl bg-gray-200 text-gray-600">{profileData?.firstName?.slice(0, 1)}</AvatarFallback>
                         </Avatar>
-                        <div className="absolute bottom-2 right-2 bg-white rounded-full p-0.5">
-                            <CheckCircle2 className="h-6 w-6 text-teal-500 fill-teal-500" />
-                        </div>
+                        {!isPending && (
+                            <div className="absolute bottom-2 right-2 bg-white rounded-full p-0.5">
+                                <CheckCircle2 className="h-6 w-6 text-teal-500 fill-teal-500" />
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Name and Role */}
                 <div className="pt-20 text-center mb-6">
-                    <h2 className="text-xl font-semibold text-teal-700 mb-1">Maria Jasmin</h2>
-                    <p className="text-sm text-gray-500">Admin</p>
+                    <h2 className="text-xl font-semibold text-teal-700 mb-1">{profileData?.firstName}</h2>
+                    <p className="text-sm text-gray-500">{profileData?.role}</p>
                 </div>
 
                 {/* Information List */}
                 <div className="space-y-3">
-                    <InfoRow label="Name:" value="Maria Jasmin" />
-                    <InfoRow label="Email:" value="Maria.Jasmin@gmail.com" />
-                    <InfoRow label="Phone:" value="+1 (555) 214-8574" />
-                    <InfoRow label="Location:" value="San Francisco" />
-                    <InfoRow label="Member Since:" value="14 August 2025" />
+                    <InfoRow label="Name:" value={profileData?.firstName + " " + profileData?.lastName} />
+                    <InfoRow label="Email:" value={profileData?.email || "-"} />
+                    <InfoRow label="Phone:" value={profileData?.phone || "-"} />
+                    <InfoRow label="Location:" value={profileData?.location || "-"} />
+                    <InfoRow
+                        label="Member Since:"
+                        value={
+                            profileData?.createdAt
+                                ? new Date(profileData.createdAt).toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                })
+                                : "-"
+                        }
+                    />
                 </div>
             </div>
         </Card>
@@ -85,4 +114,4 @@ function InfoRow({ label, value }: { label: string; value: string }) {
             <span className="text-[#68706A]">{value}</span>
         </div>
     )
-}
+}  
