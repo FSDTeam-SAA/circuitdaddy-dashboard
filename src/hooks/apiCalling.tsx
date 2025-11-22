@@ -1,11 +1,13 @@
 
+import { addLevel, getAllBadge } from "@/lib/badge";
 import { addBlog, deleteBlog, editBlog, getAllBlog, getSingleBlog } from "@/lib/blog";
 import { getOverview } from "@/lib/dashboardOverview";
 import { addFaq, deleteFaq, editFaq, getAllFaq, getSingelFaq } from "@/lib/faq";
 import { addIndustry, deleteIndustry, editIndustry, getAllIndustries, getSingleIndustry } from "@/lib/industries";
-import { getProfile, updateAvatar, updateProfileInfo } from "@/lib/profileinfo";
+import { getProfile, updateAvatar, updateProfileInfo, updateStatus } from "@/lib/profileinfo";
 import { addService, deleteService, editService, getAllActiveProject, getAllProjectCompleted, getAllService, getAllServiceStast, getSingleService } from "@/lib/service";
 import { getAllUser } from "@/lib/user";
+import { BadgeResponse } from "@/types/badgeType";
 import { BlogResponse, SingelBlogResponse } from "@/types/blog";
 import { DashboardOverviewResponse } from "@/types/dashboardStach";
 import { FaqResponse, SingleFaqResponse } from "@/types/faq";
@@ -388,4 +390,48 @@ export function useGetAllProjectCompleted(token:string) {
             return getAllProjectCompleted(token)
         },
     })
+}
+
+export function useGetAllLevel(token:string) {
+    return useQuery<BadgeResponse>({
+        queryKey: ["level"],
+        queryFn: () => {
+            return getAllBadge(token)
+        },
+    })
+}
+
+
+export function useAddLevel(token: string,  onSuccessCallback?: () => void) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (payload: { level: string, badge: File }) => addLevel(token, payload),
+        onSuccess: () => {
+            toast.success("level add successful");
+            queryClient.invalidateQueries({ queryKey: ["level"] });
+            if (onSuccessCallback) onSuccessCallback();
+        },
+        onError: (error: unknown) => {
+            if (error instanceof Error) toast.error(error.message || "add failed");
+            else toast.error("add failed");
+        },
+    });
+}
+
+export function useUserStatusUpdate(token: string, onSuccessCallback?: () => void) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (payload: { status: string, id: string }) => updateStatus(token, payload),
+        onSuccess: () => {
+            toast.success("Status updated successfully");
+            queryClient.invalidateQueries({ queryKey: ["me"] });
+            if (onSuccessCallback) onSuccessCallback();
+        },
+        onError: (error: unknown) => {
+            if (error instanceof Error) toast.error(error.message || "Update failed");
+            else toast.error("Update failed");
+        },
+    });
 }

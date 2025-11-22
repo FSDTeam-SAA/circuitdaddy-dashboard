@@ -1,7 +1,7 @@
 
 export async function updateProfileInfo(
   token: string,
-  payload: FormData          
+  payload: FormData
 ) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/update-my-profile`,
@@ -9,7 +9,7 @@ export async function updateProfileInfo(
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
-       
+
       },
       body: payload,
     }
@@ -68,5 +68,25 @@ export async function changePassword(token: string, payload: { oldPassword: stri
 
   const resData = await response.json();
   if (!response.ok) throw new Error(resData.message || "Failed to update password");
+  return resData;
+}
+
+export async function updateStatus(token: string, payload: { status: string, id: string }) {
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${payload.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(
+      {
+        status: payload.status,
+      }
+    ),
+  });
+
+  const resData = await response.json();
+  if (!response.ok) throw new Error(resData.message || "Failed to update profile");
   return resData;
 }

@@ -11,7 +11,7 @@ export default function TopLoadingBar() {
   const prevPathRef = useRef(pathname);
 
   useEffect(() => {
-    // Only trigger on actual route change
+    
     if (prevPathRef.current !== pathname) {
       prevPathRef.current = pathname;
       startLoading();
@@ -43,7 +43,7 @@ export default function TopLoadingBar() {
     if (bar) bar.style.transform = `scaleX(${progressRef.current})`;
   };
 
-  const finishLoading = () => {
+  const finishLoading = React.useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
     progressRef.current = 1;
@@ -54,7 +54,7 @@ export default function TopLoadingBar() {
       progressRef.current = 0;
       updateBar();
     }, 300);
-  };
+  }, []);
 
   // Hide bar after route load settles
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function TopLoadingBar() {
       const timer = setTimeout(() => finishLoading(), 500);
       return () => clearTimeout(timer);
     }
-  }, [visible]);
+  }, [visible, finishLoading]);
 
   return (
     <div

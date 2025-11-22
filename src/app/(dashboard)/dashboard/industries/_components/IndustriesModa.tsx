@@ -167,6 +167,7 @@ import { useAddIndustry } from "@/hooks/apiCalling"
 import { useSession } from "next-auth/react"
 import { Loader2, X } from "lucide-react"
 import { useState } from "react"
+import Image from "next/image"
 
 const formSchema = z.object({
     name: z.string().min(1, "Industry name is required"),
@@ -307,7 +308,8 @@ export default function AddIndustryModal({ open, onClose }: AddIndustryModalProp
                                         {/* Preview */}
                                         {previewImage && (
                                             <div className="relative w-32 h-32 mt-3">
-                                                <img
+                                                <Image
+                                                    fill
                                                     src={previewImage}
                                                     alt="Preview"
                                                     className="w-full h-full object-cover rounded-md border"
