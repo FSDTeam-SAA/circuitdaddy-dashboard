@@ -84,6 +84,7 @@ import {
   ClipboardList,
   LayoutPanelLeft,
   Settings,
+  CircleFadingArrowUp,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -104,6 +105,7 @@ const navigation = [
   { name: "Services", href: "/dashboard/services", icon: ClipboardList },
   { name: "Industries", href: "/dashboard/industries", icon: FolderOpen },
   { name: "Blog & FAQ CMS", href: "/dashboard/blog", icon: ImageIcon },
+  { name: "Level approve requests", href: "/dashboard/level-approve-requests", icon: CircleFadingArrowUp },
   { name: "Settings", href: "/dashboard/setting", icon: Settings },
 ];
 
@@ -125,7 +127,7 @@ export function DashboardSidebar() {
         <Image src="/logo.png" alt="logo" width={700} height={700} />
       </div>
 
-      <div className="flex items-center justify-center mb-10">
+      {/* <div className="flex items-center justify-center mb-10">
         <Image
           src="/profile.jpg"
           alt="Profile"
@@ -133,7 +135,7 @@ export function DashboardSidebar() {
           height={80}
           className="w-20 h-20 rounded-full object-cover"
         />
-      </div>
+      </div> */}
 
       <nav className="flex-1 scrollbar-none px-4 space-y-[24px] overflow-y-auto">
         {navigation.map((item) => {
