@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/form"
 import { Card, CardContent } from "@/components/ui/card"
 import { PasswordInput } from "@/components/ui/password-input"
+import { useChnagePassword } from "@/hooks/apiCalling"
+import { useSession } from "next-auth/react"
 
 
 const formSchema = z.object({
@@ -35,24 +37,26 @@ const formSchema = z.object({
 });
 
 export default function PasswordChange() {
+    const { data: session } = useSession();
+    const token = (session?.user as { accessToken: string })?.accessToken;
 
+    const passwordMutation = useChnagePassword(token)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
 
     })
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        try {
-            console.log(values);
-            toast(
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-                </pre>
-            );
-        } catch (error) {
-            console.error("Form submission error", error);
-            toast.error("Failed to submit the form. Please try again.");
+        if (values.newPassword !== values.confirmPassword) {
+            toast.error("New password and confirm password do not match");
+            return;
         }
+
+        passwordMutation.mutate({
+            oldPassword: values.currentPassword,
+            newPassword: values.newPassword,
+        })
+
     }
 
     return (

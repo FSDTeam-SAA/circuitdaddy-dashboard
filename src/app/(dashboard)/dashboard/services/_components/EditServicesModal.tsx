@@ -1,3 +1,4 @@
+
 // "use client"
 
 // import { useForm } from "react-hook-form"
@@ -20,14 +21,14 @@
 //     FormItem,
 //     FormLabel,
 // } from "@/components/ui/form"
-// import { Select, SelectTrigger, SelectItem, SelectValue, SelectContent } from "@/components/ui/select"
-// import { useAddIndustry, useGetSingelIndustry } from "@/hooks/apiCalling"
+// import { useEditService, useGetSingelService } from "@/hooks/apiCalling"
 // import { useSession } from "next-auth/react"
 // import { Loader2 } from "lucide-react"
+// import { useEffect } from "react"
 
 // const formSchema = z.object({
 //     name: z.string().min(1, "Industry name is required"),
-//     status: z.string(),
+//     category: z.string(),
 //     description: z.string().optional(),
 // })
 
@@ -37,29 +38,42 @@
 //     onClose: () => void
 // }
 
-// export default function EditIndustryModal({ open, onClose, id }: EditIndustryModalProps) {
+// export default function EditServiceModal({ open, onClose, id }: EditIndustryModalProps) {
+
 //     const form = useForm({
 //         resolver: zodResolver(formSchema),
 //         defaultValues: {
 //             name: "",
-//             status: "Active",
+//             category: "",
 //             description: "",
 //         },
 //     })
+
 //     const { data: session } = useSession();
 //     const token = (session?.user as { accessToken: string })?.accessToken;
 
-//     const addIndustryMutation = useAddIndustry(token, onClose, form.reset)
-//     const singelIndustry = useGetSingelIndustry(id);
-//     console.log("singelIndustry", singelIndustry.data?.data);
+//     const updateIndustryMutation = useEditService(token, id, onClose)
+//     const singelService = useGetSingelService(id)
+
+
+//     useEffect(() => {
+//         if (singelService.data?.data) {
+//             const industry = singelService.data.data
+
+//             form.reset({
+//                 name: industry.serviceName || "",
+//                 category: industry.category || "",
+//                 description: industry.description || "",
+//             })
+//         }
+//     }, [singelService.data, form])
 
 //     const onSubmit = (values: z.infer<typeof formSchema>) => {
-//         addIndustryMutation.mutate({
+//         updateIndustryMutation.mutate({
 //             name: values.name,
-//             status: values.status.toLowerCase(),
+//             category: values.category,
 //             description: values.description || "",
 //         })
-//         form.reset()
 //     }
 
 //     return (
@@ -67,19 +81,21 @@
 //             <DialogContent className="max-w-lg p-0 overflow-hidden rounded-xl">
 //                 <div className="p-6">
 //                     <DialogHeader>
-//                         <DialogTitle className="text-xl font-semibold text-[#282828]">Edit New Industry</DialogTitle>
+//                         <DialogTitle className="text-xl font-semibold text-[#282828]">
+//                           Edit Service
+//                         </DialogTitle>
 //                     </DialogHeader>
 
 //                     <Form {...form}>
 //                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
 
-//                             {/* Industry Name */}
+//                             {/* 🔹 Name */}
 //                             <FormField
 //                                 control={form.control}
 //                                 name="name"
 //                                 render={({ field }) => (
 //                                     <FormItem>
-//                                         <FormLabel className="text-[#374151]">Industry Name</FormLabel>
+//                                         <FormLabel className="text-[#374151]">Service Name</FormLabel>
 //                                         <FormControl>
 //                                             <Input placeholder="MedTech & Healthcare" {...field} />
 //                                         </FormControl>
@@ -87,35 +103,26 @@
 //                                 )}
 //                             />
 
-//                             {/* Status */}
 //                             <FormField
 //                                 control={form.control}
-//                                 name="status"
+//                                 name="category"
 //                                 render={({ field }) => (
 //                                     <FormItem>
-//                                         <FormLabel className="text-[#374151]">Status</FormLabel>
-//                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-//                                             <FormControl>
-//                                                 <SelectTrigger>
-//                                                     <SelectValue placeholder="Select Status" />
-//                                                 </SelectTrigger>
-//                                             </FormControl>
-//                                             <SelectContent>
-//                                                 <SelectItem value="Active">Active</SelectItem>
-//                                                 <SelectItem value="Inactive">Inactive</SelectItem>
-//                                             </SelectContent>
-//                                         </Select>
+//                                         <FormLabel className="text-[#374151] ">Category</FormLabel>
+//                                         <FormControl>
+//                                             <Input placeholder="Healthcare" {...field} />
+//                                         </FormControl>
 //                                     </FormItem>
 //                                 )}
 //                             />
 
-//                             {/* Description */}
+//                             {/* 🔹 Description */}
 //                             <FormField
 //                                 control={form.control}
 //                                 name="description"
 //                                 render={({ field }) => (
 //                                     <FormItem>
-//                                         <FormLabel className="text-[#374151]" >Description</FormLabel>
+//                                         <FormLabel className="text-[#374151]">Description</FormLabel>
 //                                         <FormControl>
 //                                             <Textarea rows={4} placeholder="Service description and details..." {...field} />
 //                                         </FormControl>
@@ -123,15 +130,17 @@
 //                                 )}
 //                             />
 
-//                             <DialogFooter className=" pt-4 mt-6 flex items-center justify-end gap-3">
+//                             <DialogFooter className="pt-4 mt-6 flex items-center justify-end gap-3">
 //                                 <Button variant="outline" type="button" onClick={onClose}>
 //                                     Cancel
 //                                 </Button>
 //                                 <Button type="submit" className="bg-[#003D39] text-white hover:bg-[#002a28]">
-//                                     Update Service {addIndustryMutation.isPending && <Loader2 className="animate-spin" />}
+//                                     Update Service
+//                                     {updateIndustryMutation.isPending && (
+//                                         <Loader2 className="animate-spin ml-2" size={18} />
+//                                     )}
 //                                 </Button>
 //                             </DialogFooter>
-
 //                         </form>
 //                     </Form>
 //                 </div>
@@ -139,6 +148,7 @@
 //         </Dialog>
 //     )
 // }
+
 
 "use client"
 
@@ -165,55 +175,58 @@ import {
 import { useEditService, useGetSingelService } from "@/hooks/apiCalling"
 import { useSession } from "next-auth/react"
 import { Loader2 } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import Image from "next/image"
 
 const formSchema = z.object({
-    name: z.string().min(1, "Industry name is required"),
-    category: z.string(),
+    name: z.string().min(1, "Service name is required"),
     description: z.string().optional(),
+    image: z.any().optional(), // Accept file
 })
 
-interface EditIndustryModalProps {
+interface EditServiceModalProps {
     open: boolean
     id: string
     onClose: () => void
 }
 
-export default function EditServiceModal({ open, onClose, id }: EditIndustryModalProps) {
-
+export default function EditServiceModal({ open, onClose, id }: EditServiceModalProps) {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            category: "",
             description: "",
+            image: null,
         },
     })
 
     const { data: session } = useSession();
     const token = (session?.user as { accessToken: string })?.accessToken;
 
-    const updateIndustryMutation = useEditService(token, id, onClose)
+    const updateServiceMutation = useEditService(token, id, onClose)
     const singelService = useGetSingelService(id)
 
+    const [preview, setPreview] = useState<string>("")
 
     useEffect(() => {
         if (singelService.data?.data) {
-            const industry = singelService.data.data
+            const service = singelService.data.data
 
             form.reset({
-                name: industry.serviceName || "",
-                category: industry.category || "",
-                description: industry.description || "",
+                name: service.serviceName || "",
+                description: service.description || "",
+                image: null,
             })
+
+            setPreview(service.image || "") // show existing image
         }
     }, [singelService.data, form])
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        updateIndustryMutation.mutate({
+        updateServiceMutation.mutate({
             name: values.name,
-            category: values.category,
             description: values.description || "",
+            image: values.image[0],
         })
     }
 
@@ -223,7 +236,7 @@ export default function EditServiceModal({ open, onClose, id }: EditIndustryModa
                 <div className="p-6">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-semibold text-[#282828]">
-                          Edit Service
+                            Edit Service
                         </DialogTitle>
                     </DialogHeader>
 
@@ -244,19 +257,6 @@ export default function EditServiceModal({ open, onClose, id }: EditIndustryModa
                                 )}
                             />
 
-                            <FormField
-                                control={form.control}
-                                name="category"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-[#374151] ">Category</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Healthcare" {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-
                             {/* 🔹 Description */}
                             <FormField
                                 control={form.control}
@@ -271,13 +271,45 @@ export default function EditServiceModal({ open, onClose, id }: EditIndustryModa
                                 )}
                             />
 
+                            {/* 🔹 Image */}
+                            <FormField
+                                control={form.control}
+                                name="image"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-[#374151]">Service Image</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    field.onChange(e.target.files)
+                                                    if (e.target.files && e.target.files[0]) {
+                                                        setPreview(URL.createObjectURL(e.target.files[0]))
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+                                        {preview && (
+                                            <Image
+                                                width={900}
+                                                height={900}
+                                                src={preview}
+                                                alt="Preview"
+                                                className="mt-2 h-24 w-24 object-cover rounded-md"
+                                            />
+                                        )}
+                                    </FormItem>
+                                )}
+                            />
+
                             <DialogFooter className="pt-4 mt-6 flex items-center justify-end gap-3">
                                 <Button variant="outline" type="button" onClick={onClose}>
                                     Cancel
                                 </Button>
                                 <Button type="submit" className="bg-[#003D39] text-white hover:bg-[#002a28]">
                                     Update Service
-                                    {updateIndustryMutation.isPending && (
+                                    {updateServiceMutation.isPending && (
                                         <Loader2 className="animate-spin ml-2" size={18} />
                                     )}
                                 </Button>
