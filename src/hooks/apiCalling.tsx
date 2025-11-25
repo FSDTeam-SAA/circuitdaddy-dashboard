@@ -4,8 +4,9 @@ import { addBlog, deleteBlog, editBlog, getAllBlog, getSingleBlog } from "@/lib/
 import { getOverview } from "@/lib/dashboardOverview";
 import { addFaq, deleteFaq, editFaq, getAllFaq, getSingelFaq } from "@/lib/faq";
 import { addIndustry, deleteIndustry, editIndustry, getAllIndustries, getSingleIndustry } from "@/lib/industries";
+import { MonthlyEarningsResponse } from "@/lib/platformGroth";
 import { changePassword, getProfile, updateAvatar, updateProfileInfo, updateStatus } from "@/lib/profileinfo";
-import { addService, deleteService, editService, getAllActiveProject, getAllProjectCompleted, getAllService, getAllServiceStast, getSingleService } from "@/lib/service";
+import { addService, deleteService, editService, getAllActiveProject, getAllGrowth, getAllProjectCompleted, getAllService, getAllServiceStast, getSingleService } from "@/lib/service";
 import { getAllUser } from "@/lib/user";
 import { BadgeLevelResponse } from "@/types/badgelevel";
 import { BadgeResponse } from "@/types/badgeType";
@@ -393,6 +394,15 @@ export function useGetAllServiceStats() {
     })
 }
 
+export function useGetAllGrowthStats(token: string) {
+    return useQuery<MonthlyEarningsResponse>({
+        queryKey: ["growth"],
+        queryFn: () => {
+            return getAllGrowth(token)
+        },
+    })
+}
+
 export function useGetAllActiveProject(token:string) {
     return useQuery<ProjectsResponse>({
         queryKey: ["active-project"],
@@ -424,7 +434,7 @@ export function useAddLevel(token: string,  onSuccessCallback?: () => void) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (payload: { level: string, badge: File }) => addLevel(token, payload),
+        mutationFn: (payload: { level: string, badges: File[] }) => addLevel(token, payload),
         onSuccess: () => {
             toast.success("level add successful");
             queryClient.invalidateQueries({ queryKey: ["level"] });
@@ -463,7 +473,7 @@ export function useGetAllLevelRequest(token:string) {
     })
 }
 
-export function useApproveLevel(token: string, setOpen: React.Dispatch<React.SetStateAction<boolean>>,onSuccessCallback?: () => void) {
+export function useApproveLevel(token: string,onSuccessCallback?: () => void) {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -472,7 +482,6 @@ export function useApproveLevel(token: string, setOpen: React.Dispatch<React.Set
             toast.success("Request approved successfully");
             queryClient.invalidateQueries({ queryKey: ["level-request"] });
             if (onSuccessCallback) onSuccessCallback();
-            setOpen(false)
         },
         onError: (error: unknown) => {
             if (error instanceof Error) toast.error(error.message || "Update failed");

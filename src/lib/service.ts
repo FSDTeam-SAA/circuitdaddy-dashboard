@@ -95,6 +95,21 @@ export async function getAllServiceStast() {
   return resData
 }
 
+export async function getAllGrowth(token: string) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dashboard/monthly-earnings`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  })
+  const resData = await response.json()
+  if (!response.ok) {
+    throw new Error(resData.message || "Failed to get service data")
+  }
+  return resData
+}
+
+
 export async function getAllActiveProject(token: string) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/project/my?status=in_progress&limit=3`, {
     headers: {

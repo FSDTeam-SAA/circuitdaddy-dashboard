@@ -298,9 +298,6 @@ export default function ServicesTable() {
                                 Service Name
                             </TableHead>
                             <TableHead className="text-sm font-medium text-right">
-                                Category
-                            </TableHead>
-                            <TableHead className="text-sm font-medium text-right">
                                 Status
                             </TableHead>
                             <TableHead className="text-sm font-medium px-4 text-right">
@@ -336,10 +333,6 @@ export default function ServicesTable() {
                                 <TableRow key={item._id} className="hover:bg-muted/30">
                                     <TableCell className="text-sm py-6 px-8 text-[#424242]">
                                         {item.serviceName}
-                                    </TableCell>
-
-                                    <TableCell className="text-sm text-right text-muted-foreground">
-                                        {item.category || "—"}
                                     </TableCell>
 
                                     <TableCell className="text-sm text-right">
