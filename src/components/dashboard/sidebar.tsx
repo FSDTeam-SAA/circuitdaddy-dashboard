@@ -106,6 +106,7 @@ const navigation = [
   { name: "Industries", href: "/dashboard/industries", icon: FolderOpen },
   { name: "Blog & FAQ CMS", href: "/dashboard/blog", icon: ImageIcon },
   { name: "Level approve requests", href: "/dashboard/level-approve-requests", icon: CircleFadingArrowUp },
+  { name: "Badge approve requests", href: "/dashboard/badge-approve-requests", icon: CircleFadingArrowUp },
   { name: "Settings", href: "/dashboard/setting", icon: Settings },
 ];
 

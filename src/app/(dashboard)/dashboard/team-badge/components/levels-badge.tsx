@@ -28,7 +28,7 @@ const LevelsBadge = () => {
           onClick={() => setOpenModal(true)}
         >
           <Plus />
-          Create Level
+          Create Badge
         </Button>
       </div>
 
@@ -67,14 +67,14 @@ const LevelsBadge = () => {
             >
               <div>
                 <h2 className="text-[16px] text-[#343A40] font-semibold">
-                  Levels & Badges
+                   Badges
                 </h2>
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-[#929292] font-medium text-[14px]">
-                    Level: {level.lavel}
+                    Badge Name: {level.name}
                   </h2>
                 </div>
 

@@ -296,7 +296,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import FaqComponents from './FaqComponents'
 
 const ListOfBlog = () => {
-    const [activeCategory, setActiveCategory] = useState('All')
+    const [activeCategory] = useState('All')
     const [activeTab, setActiveTab] = useState('blog-posts')
     const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -359,7 +359,7 @@ const ListOfBlog = () => {
         <div className="w-full min-h-screen p-6">
             {/* Category + Create Button */}
             <div className="flex items-center justify-between mb-8">
-                <div className={`flex gap-2 ${activeTab === "faq" ? "hidden" : ""}`}>
+                {/* <div className={`flex gap-2 ${activeTab === "faq" ? "hidden" : ""}`}>
                     {["All", "Development", "Design", "Marketing"].map(category => (
                         <button
                             key={category}
@@ -372,7 +372,7 @@ const ListOfBlog = () => {
                             {category}
                         </button>
                     ))}
-                </div>
+                </div> */}
                 <Link href={activeTab === "faq" ? '/dashboard/faq/add-faq' : '/dashboard/blog/add-blog'}>
                     <Button className="bg-teal-900 hover:bg-teal-800 flex text-white gap-2" size="lg">
                         <Plus className="w-4 h-4" />

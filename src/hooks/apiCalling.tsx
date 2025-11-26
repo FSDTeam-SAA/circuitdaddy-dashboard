@@ -466,7 +466,7 @@ export function useUserStatusUpdate(token: string, onSuccessCallback?: () => voi
 
 export function useGetAllLevelRequest(token:string) {
     return useQuery<BadgeLevelResponse>({
-        queryKey: ["level-request"],
+        queryKey: ["badge-request"],
         queryFn: () => {
             return getAllBadgeRequest(token)
         },
@@ -489,3 +489,4 @@ export function useApproveLevel(token: string,onSuccessCallback?: () => void) {
         },
     });
 }
+
