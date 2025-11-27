@@ -13,6 +13,21 @@ export async function getAllBadge(token: string) {
     return resData
 }
 
+export async function getAllLevel(token: string) {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/lavel`, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    const resData = await response.json()
+    if (!response.ok) {
+        throw new Error(resData.message || "Failed to get project data")
+    }
+    return resData
+}
+
+
 export async function addLevel(
     token: string,
     payload: { level: string; badges: File[] }
@@ -57,7 +72,7 @@ export async function getAllBadgeRequest(token: string) {
     return resData
 }
 
-export async function approveLevel(token: string, payload: { userId: string, badgeId: string }) {
+export async function approveLevel(token: string, payload: { userId: string}) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/badge/request/${payload.userId}`, {
         method: "PUT",
@@ -65,9 +80,6 @@ export async function approveLevel(token: string, payload: { userId: string, bad
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-            badgeId: payload.badgeId,
-        }),
     });
 
     const resData = await response.json();
@@ -75,3 +87,46 @@ export async function approveLevel(token: string, payload: { userId: string, bad
     return resData;
 }
 
+
+export async function approveLevelOnly(token: string, payload: { userId: string}) {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/lavel/${payload.userId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const resData = await response.json();
+    if (!response.ok) throw new Error(resData.message || "Failed to ");
+    return resData;
+}
+
+export async function rejectLevelOnly(token: string, payload: { userId: string}) {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/lavel/${payload.userId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const resData = await response.json();
+    if (!response.ok) throw new Error(resData.message || "Failed to ");
+    return resData;
+}
+
+export async function deleteBadge(token: string, id: string,) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/badge/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const resData = await response.json();
+  if (!response.ok) throw new Error(resData.message || "Failed to ");
+  return resData;
+}

@@ -1,6 +1,6 @@
+
 "use client";
 
-import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,74 +11,48 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  useApproveLevel,
-  useGetAllLevel,
-  useGetAllLevelRequest,
-} from "@/hooks/apiCalling";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
 import { useSession } from "next-auth/react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useApproveLevel, useGetAllLevelRequest } from "@/hooks/apiCalling";
+
+import { useState } from "react";
+import Image from "next/image";
 
 export default function BadgeApprove() {
   const { data: session } = useSession();
   const token = (session?.user as { accessToken: string })?.accessToken;
 
-  // Get all levels for select box
-  const { data: getAllBadge } = useGetAllLevel(token);
-  const allLevels = getAllBadge?.data?.data ?? [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [selectedUser, setSelectedUser] = useState<null | any>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Get all level requests
+  // API Calls
   const { data: levelData, isLoading } = useGetAllLevelRequest(token);
   const users = levelData?.data || [];
-console.log(users)
-  // Approve mutation
-  const approve = useApproveLevel(token);
 
-  // State for confirmation modal
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<{
-    userId: string;
-    badgeId: string;
-  } | null>(null);
+  const approveRequest = useApproveLevel(token);
 
-  // When a badge is selected, store user and badge and open modal
-  const handleLevelSelect = (userId: string, badgeId: string) => {
-    setSelectedUser({ userId, badgeId });
-    setModalOpen(true);
+  const handleAccept = (userId: string) => {
+    approveRequest.mutate({ userId });
   };
-
-  // Confirm approval
-  const handleApprove = () => {
-    if (!selectedUser) return;
-    approve.mutate({
-      userId: selectedUser.userId,
-      badgeId: selectedUser.badgeId,
-    });
-    setModalOpen(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleView = (user: any) => {
+    setSelectedUser(user);
+    setIsOpen(true);
   };
 
   return (
     <div className="p-6">
+      {/* TABLE */}
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Profession</TableHead>
-            <TableHead>Request Level</TableHead>
-            <TableHead>Badge</TableHead>
+            <TableHead className="text-center">Current Level</TableHead>
+            <TableHead className="text-center">Action</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -86,78 +60,155 @@ console.log(users)
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => (
               <TableRow key={i}>
-                <TableCell>
-                  <Skeleton className="h-5 w-32" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-5 w-40" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-5 w-36" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-5 w-24" />
-                </TableCell>
+                <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-36" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-36" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-24" /></TableCell>
               </TableRow>
             ))
             : users.map((user) => (
               <TableRow key={user._id}>
-                <TableCell>
-                  {user.firstName} {user.lastName}
-                </TableCell>
+                <TableCell>{user.firstName} {user.lastName}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.professionTitle}</TableCell>
-                <TableCell>{user?.level}</TableCell>
+                <TableCell className="text-center">{user.level}</TableCell>
 
-                {/* ShadCN Select for Badge */}
-                <TableCell>
-                  <Select
-                    defaultValue={String(user.level) || ""}
-                    onValueChange={(value) =>
-                      handleLevelSelect(user._id, value)
-                    }
+                <TableCell className="flex gap-2 items-center justify-center">
+                  {/* VIEW BUTTON */}
+                  <Button
+                    variant="outline"
+                    onClick={() => handleView(user)}
                   >
-                    <SelectTrigger className="w-36">
-                      <SelectValue placeholder="Select Badge" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {allLevels.map((level) => (
-                        <SelectItem key={level._id} value={level._id}>
-                          Badge {level.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    View
+                  </Button>
+
+                  {/* ACCEPT BUTTON */}
+                  <Button
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => handleAccept(user._id)}
+                  >
+                    Accept
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
         </TableBody>
       </Table>
 
-      {/* Confirmation Modal */}
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent>
+
+      {/* MODAL */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-4xl rounded-xl shadow-lg p-6">
           <DialogHeader>
-            <DialogTitle>Approve Level Request</DialogTitle>
+            <DialogTitle className="text-2xl font-bold">User Badge Request Details</DialogTitle>
           </DialogHeader>
 
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              Are you sure you want to approve this level request?
-            </p>
-          </div>
+          {selectedUser && (
+            <div className="space-y-6">
 
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setModalOpen(false)}>
-              Cancel
-            </Button>
+              {/* PROFILE */}
+              <div className="flex items-center gap-5 p-4 bg-gray-50 rounded-lg border">
+                <Image
+                  width={100}
+                  height={100}
+                  src={selectedUser.profileImage}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover"
+                />
 
-            <Button onClick={handleApprove} disabled={approve.isPending}>
-              {approve.isPending ? "Approving..." : "Approve"}
-            </Button>
-          </div>
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    {selectedUser.firstName} {selectedUser.lastName}
+                  </h2>
+                  <p className="text-gray-600">{selectedUser.email}</p>
+                  <p className="text-gray-700 font-medium">{selectedUser.professionTitle}</p>
+                </div>
+              </div>
+
+              {/* DETAILS SECTION */}
+              <div className="grid grid-cols-2 gap-5 bg-white p-4 rounded-lg border shadow-sm">
+                <div className="space-y-1">
+                  <p><strong>Experience:</strong> {selectedUser.experience} years</p>
+                  <p><strong>Location:</strong> {selectedUser.location}</p>
+                  <p><strong>Rate:</strong> ${selectedUser.rate}/hr</p>
+                  <p><strong>Completed Projects:</strong> {selectedUser.completedProjectsCount}</p>
+                  <p><strong>User Status:</strong> {selectedUser.userstatus}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="font-semibold text-lg">Skills</h2>
+                  <ul className="list-disc ml-5 text-gray-800">
+                    {selectedUser.skills?.map((skill: string[], i: number) => (
+                      <li key={i}>{skill}</li>
+                    ))}
+                  </ul>
+
+                  <h2 className="font-semibold text-lg mt-4">GitHub</h2>
+                  <a
+                    href={selectedUser.gitHubLink}
+                    target="_blank"
+                    className="text-blue-600 underline break-all"
+                  >
+                    {selectedUser.gitHubLink}
+                  </a>
+                </div>
+              </div>
+
+              {/* BADGE IMAGES */}
+              {selectedUser?.badgeRequest && (
+                <div className="bg-gray-50 p-4 rounded-lg border">
+                  <h2 className="font-semibold text-lg mb-3">
+                    Requested Badge: {selectedUser?.badgeRequest?.name}
+                  </h2>
+
+                  <div className="flex gap-4 flex-wrap">
+                    {selectedUser?.badgeRequest?.badge?.map((img: string, i: number) => (
+                      <Image
+                        width={200}
+                        height={200}
+                        key={i}
+                        src={img}
+                        alt="Badge"
+                        className="w-24 h-24 rounded-lg object-cover shadow-sm border"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* DOCUMENTS */}
+              <div className="bg-white p-4 rounded-lg border shadow-sm space-y-3">
+                <h2 className="font-semibold text-lg">Documents</h2>
+
+                <div>
+                  <p className="font-medium">CV:</p>
+                  <a
+                    href={selectedUser.cv}
+                    target="_blank"
+                    className="text-blue-600 underline break-all"
+                  >
+                    Download CV
+                  </a>
+                </div>
+
+                <div>
+                  <p className="font-medium">Certifications:</p>
+                  <a
+                    href={selectedUser.certifications}
+                    target="_blank"
+                    className="text-blue-600 underline break-all"
+                  >
+                    View Certifications
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          )}
         </DialogContent>
       </Dialog>
+
     </div>
   );
 }
