@@ -1,51 +1,59 @@
-export interface BadgeLevelUser {
+interface Badge {
+  _id: string;
+  name: string;
+  badge: string[];
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+}
+
+interface UserData {
   _id: string;
   email: string;
   role: string;
   status: string;
   firstName: string;
   lastName: string;
-  phone: string;
   profileImage: string;
   professionTitle: string;
   bio: string;
   rate: number;
-  experience: number;
   skills: string[];
   expertise: string[];
   industry: string;
   service: string;
   location: string;
+  walletBalance: number;
+  balance: number;
+  totalEarned: number;
+  completedProjectsCount: number;
+  level: number;
+  avgRating: number;
+  ismanager: boolean;
   createdAt: string;
   updatedAt: string;
   __v: number;
-  avgRating: number;
-  balance: number;
-  completedProjectsCount: number;
   lastLogin: string;
-  level: number;
-  ratingCount: number;
-  totalEarned: number;
-  totalRating: number;
-  walletBalance: number;
-  ismanager: boolean;
   stripeAccountId: string;
+  experience: number;
+  gitHubLink: string;
+  badgeUpdateRequest: boolean;
+  userstatus: string;
+  badgeRequest: string;
+  badge: Badge;
   lavelUpdateRequest: boolean;
-  badge: string;
 }
 
-export interface BadgeLevelMeta {
+interface Meta {
   page: number;
   limit: number;
   total: number;
 }
 
-export interface BadgeLevelResponse {
+export interface LevelUpResponse {
   statusCode: number;
   success: boolean;
   message: string;
-  meta: BadgeLevelMeta;
-  data: BadgeLevelUser[];
+  meta: Meta;
+  data: UserData[];
 }
-
-
