@@ -138,9 +138,9 @@ export default function CreateLevelBadgeModal({
                 <div className="grid gap-6 mt-4">
                     {/* Level Input */}
                     <div className="grid gap-2">
-                        <Label>Level</Label>
+                        <Label>Badge</Label>
                         <Input
-                            placeholder="01"
+                            placeholder="Badge name"
                             value={level}
                             onChange={(e) => setLevel(e.target.value)}
                             className="h-11"
@@ -149,7 +149,7 @@ export default function CreateLevelBadgeModal({
 
                     {/* Badge Multiple File Upload */}
                     <div className="grid gap-2">
-                        <Label>Level Badges (Multiple)</Label>
+                        <Label> Badges (Multiple)</Label>
                         <Input
                             type="file"
                             accept="image/*"

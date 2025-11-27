@@ -19,7 +19,7 @@ export async function addLevel(
 ) {
     const formData = new FormData();
 
-    formData.append("lavel", payload.level); // fixed spelling
+    formData.append("name", payload.level); // fixed spelling
 
     // append multiple images
     payload.badges.forEach((file) => {
@@ -74,3 +74,4 @@ export async function approveLevel(token: string, payload: { userId: string, bad
     if (!response.ok) throw new Error(resData.message || "Failed to ");
     return resData;
 }
+

@@ -1,6 +1,6 @@
 export interface BadgeItem {
   _id: string;
-  lavel: number;        // (If this is a typo in backend, keep it as 'lavel')
+  name: number;        // (If this is a typo in backend, keep it as 'lavel')
   badge: string[];      // Array of image URLs
   createdAt: string;
   updatedAt: string;
