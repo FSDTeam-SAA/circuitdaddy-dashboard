@@ -86,7 +86,6 @@ import {
   Settings,
   CircleFadingArrowUp,
 } from "lucide-react";
-import Image from "next/image";
 
 import {
   Dialog,
@@ -124,8 +123,24 @@ export function DashboardSidebar() {
 
   return (
     <div className="flex flex-col w-[350px] bg-card border-r border-border h-screen">
-      <div className="px-6 py-4">
-        <Image src="/logo.png" alt="logo" width={700} height={700} />
+      <div className="mt-10">
+        <Link href="/" className="flex-shrink-0  py-2 pt-10">
+          <h5
+            className="
+                text-3xl 
+                font-extrabold 
+                bg-gradient-to-r 
+                from-[#0F595A] 
+                text-center
+                to-[#0F595A] 
+                text-transparent 
+                bg-clip-text
+                select-none
+              "
+          >
+            Talent Badger
+          </h5>
+        </Link>
       </div>
 
       {/* <div className="flex items-center justify-center mb-10">
@@ -138,7 +153,7 @@ export function DashboardSidebar() {
         />
       </div> */}
 
-      <nav className="flex-1 scrollbar-none px-4 space-y-[24px] overflow-y-auto">
+      <nav className="flex-1 scrollbar-none px-4 mt-10 space-y-[24px] overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
           return (
