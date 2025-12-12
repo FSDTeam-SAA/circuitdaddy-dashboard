@@ -13,7 +13,7 @@ import {
 import { useSession } from "next-auth/react"
 import { ReusablePagination } from "@/components/pagination"
 
-type Status = "active" | "Pending" | "Blocked"
+type Status = "active" | "pending" | "rejected"
 
 export function UserManagementTable() {
     const { data: session } = useSession()
@@ -129,8 +129,8 @@ export function UserManagementTable() {
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="active">Active</SelectItem>
-                                                    <SelectItem value="Pending">Pending</SelectItem>
-                                                    <SelectItem value="Blocked">Blocked</SelectItem>
+                                                    <SelectItem value="pending">Pending</SelectItem>
+                                                    <SelectItem value="rejected">Blocked</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </td>
