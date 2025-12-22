@@ -9,6 +9,7 @@ export interface DashboardOverviewData {
     totalErning: string;         
     totaActivelUser: number;
     totalActiveProject: number;
+    totalEarning: number;
     totalPandingProject: number;
     totalCompletedProject: number;
 }

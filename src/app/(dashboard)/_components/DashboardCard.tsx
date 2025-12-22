@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetAllOverview } from '@/hooks/apiCalling'
-import { Box, ClockFading, User2 } from 'lucide-react'
+import { Box, ClockFading, PartyPopper, User2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import React from 'react'
 
@@ -12,7 +12,7 @@ const DashboardCard = () => {
 
     return (
         <div>
-            <div className='grid grid-cols-4 gap-5'>
+            <div className='grid grid-cols-5 gap-5'>
                 <Card className='py-9 px-4'>
                     <CardContent className='flex justify-between items-center'>
                         <div className='space-y-[6px]'>
@@ -32,6 +32,17 @@ const DashboardCard = () => {
                         </div>
                         <div className='bg-[#E8F1F1] p-2 rounded-lg text-[#147575]'>
                             <User2 />
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className='py-9 px-4'>
+                    <CardContent className='flex justify-between items-center'>
+                        <div className='space-y-[6px]'>
+                            <p className='text-[#6B7280] font-medium text-[12px]'>Total Earning</p>
+                            <p className='text-[#1F2937] font-medium  text-[20px]'>{statch?.data?.data.totalEarning}</p>
+                        </div>
+                        <div className='bg-[#E8F1F1] p-2 rounded-lg text-[#147575]'>
+                            <PartyPopper />
                         </div>
                     </CardContent>
                 </Card>
