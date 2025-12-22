@@ -10,6 +10,7 @@ const page = () => {
         subtitle="Monitor and moderate forum discussions."
       />
       <div className='p-6 mt-6'>
+        
       <ListOfBlog/>
       </div>
     </div>
